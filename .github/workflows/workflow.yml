@@ -62,3 +62,4 @@ jobs:
           output: vuln-scan-report.sarif
           cache-dir: /tmp/.trivycache
           hide-progress: true
+          cache-from: type=local,src=/tmp/.buildx-cache
