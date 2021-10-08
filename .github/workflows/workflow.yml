@@ -36,7 +36,7 @@ jobs:
       - name: Build Docker image
         uses: docker/build-push-action@v2
         with:
-          push: true
+          push: false
           context: ./${{ matrix.path }}
           file: ./${{ matrix.path }}/Dockerfile
           platforms: linux/amd64
@@ -71,4 +71,4 @@ jobs:
           hide-progress: true
 
       - name: Correct Trivy cache permissions
-        run: sudo chown -R $USER:$GROUP .trivy-cache
+        run: sudo chown -R $USER:$GROUP .trivycache
