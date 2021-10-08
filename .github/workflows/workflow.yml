@@ -26,7 +26,9 @@ jobs:
       - name: Cache Docker layers
         uses: actions/cache@v2
         with:
-          path: /tmp/.buildx-cache
+          path: |
+                .trivycache
+                /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
@@ -41,6 +43,7 @@ jobs:
           tags: |
             alpiquero/alpine-test:1.0
             alpiquero/alpine-test:latest
+            docker.io/alpiquero/alpine-test:test
           
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
@@ -57,7 +60,7 @@ jobs:
         uses: aquasecurity/trivy-action@0.0.20
         with:
           scan-type: 'image'
-          image-ref: 'alpiquero/alpine-test:1.0'
+          image-ref: 'docker.io/alpiquero/alpine-test:test'
           exit-code: 0
           ignore-unfixed: true
           vuln-type: 'os,library'
@@ -65,7 +68,7 @@ jobs:
           format: 'template'
           template: '@/contrib/sarif.tpl'
           output: vuln-scan-report.sarif
-          cache-dir: /tmp/.buildx-cache
+          cache-dir: .trivycache
           hide-progress: true
 
       - name: Correct Trivy cache permissions
