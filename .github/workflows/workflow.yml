@@ -37,6 +37,7 @@ jobs:
           tags: |
             alpiquero/alpine-test:1.0
             alpiquero/alpine-test:latest
+            alpine-test:test
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
 
@@ -52,7 +53,7 @@ jobs:
         uses: aquasecurity/trivy-action@0.0.20
         with:
           scan-type: 'image'
-          image-ref: 'alpiquero/alpine-test:1.0'
+          image-ref: 'alpine-test:test'
           exit-code: 0
           ignore-unfixed: true
           vuln-type: 'os,library'
