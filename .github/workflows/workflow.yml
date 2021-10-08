@@ -28,7 +28,7 @@ jobs:
         with:
           path: |
             /tmp/.buildx-cache
-            /tmp/.trivycache
+            .trivycache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
@@ -67,6 +67,8 @@ jobs:
           format: 'template'
           template: '@/contrib/sarif.tpl'
           output: vuln-scan-report.sarif
-          cache-dir: /tmp/.trivycache
+          cache-dir: .trivycache
           hide-progress: true
-          cache-from: type=local,src=/tmp/.buildx-cache
+
+      - name: Correct Trivy cache permissions
+        run: sudo chown -R $USER:$GROUP .trivy-cache
