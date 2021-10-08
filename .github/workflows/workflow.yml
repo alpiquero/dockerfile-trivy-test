@@ -26,9 +26,7 @@ jobs:
       - name: Cache Docker layers
         uses: actions/cache@v2
         with:
-          path: |
-            /tmp/.buildx-cache
-            .trivycache
+          path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
@@ -67,7 +65,7 @@ jobs:
           format: 'template'
           template: '@/contrib/sarif.tpl'
           output: vuln-scan-report.sarif
-          cache-dir: .trivycache
+          cache-dir: /tmp/.buildx-cache
           hide-progress: true
 
       - name: Correct Trivy cache permissions
