@@ -14,47 +14,51 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+      # - name: Set up Docker Buildx
+      #   uses: docker/setup-buildx-action@v1
       
-      - name: Login to DockerHub
-        uses: docker/login-action@v1 
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      # - name: Login to DockerHub
+      #   uses: docker/login-action@v1 
+      #   with:
+      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
+      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: |
-                .trivycache
-                /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
+      # - name: Cache Docker layers
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: |
+      #           .trivycache
+      #           /tmp/.buildx-cache
+      #     key: ${{ runner.os }}-buildx-${{ github.sha }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-buildx-
 
-      - name: Build Docker image
-        uses: docker/build-push-action@v2
-        with:
-          push: false
-          context: ./${{ matrix.path }}
-          file: ./${{ matrix.path }}/Dockerfile
-          platforms: linux/amd64
-          tags: |
-            alpiquero/alpine-test:1.0
-            alpiquero/alpine-test:latest
-            docker.io/alpiquero/alpine-test:test
+      # - name: Build Docker image
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     push: false
+      #     context: ./${{ matrix.path }}
+      #     file: ./${{ matrix.path }}/Dockerfile
+      #     platforms: linux/amd64
+      #     tags: |
+      #       alpiquero/alpine-test:1.0
+      #       alpiquero/alpine-test:latest
+      #       docker.io/alpiquero/alpine-test:test
           
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+      #     cache-from: type=local,src=/tmp/.buildx-cache
+      #     cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+
+      - name: Build an image from Dockerfile
+        run: |
+            docker build -t docker.io/alpiquero/alpine-test:test .
 
       # Temp fix
       # https://github.com/docker/build-push-action/issues/252 
       # https://github.com/moby/buildkit/issues/1896
-      - name: Move cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+      # - name: Move cache
+      #   run: |
+      #     rm -rf /tmp/.buildx-cache
+      #     mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
       - name: Aqua Security Trivy
         uses: aquasecurity/trivy-action@0.0.20
@@ -68,8 +72,4 @@ jobs:
           format: 'template'
           template: '@/contrib/sarif.tpl'
           output: vuln-scan-report.sarif
-          cache-dir: .trivycache
           hide-progress: true
-
-      - name: Correct Trivy cache permissions
-        run: sudo chown -R $USER:$GROUP .trivycache
